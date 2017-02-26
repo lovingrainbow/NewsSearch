@@ -1,5 +1,7 @@
 package com.example.quietus.newssearch.Activity;
 
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebResourceRequest;
@@ -20,7 +22,9 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
         article = (Article) Parcels.unwrap(getIntent().getParcelableExtra("Article"));
-        setView();
+
+
+        //setView();
     }
 
     private void setView(){

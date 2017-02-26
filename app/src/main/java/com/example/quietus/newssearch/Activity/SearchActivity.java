@@ -1,6 +1,8 @@
 package com.example.quietus.newssearch.Activity;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -70,6 +72,7 @@ public class SearchActivity extends AppCompatActivity {
                 articles.clear();
                 sQuery = query;
                 onArticleSearch(0);
+                searchView.clearFocus();
                 return true;
             }
 
@@ -102,11 +105,20 @@ public class SearchActivity extends AppCompatActivity {
         gvReslut.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
-                intent.putExtra("Article", Parcels.wrap(articles.get(position)));
-                startActivity(intent);
+                //Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
+                //intent.putExtra("Article", Parcels.wrap(articles.get(position)));
+                //startActivity(intent);
+                openBrowser(position);
+
             }
         });
+    }
+
+    public void openBrowser(int position){
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.addDefaultShareMenuItem();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(articles.get(position).getWebUrl()));
     }
 
     @Override
