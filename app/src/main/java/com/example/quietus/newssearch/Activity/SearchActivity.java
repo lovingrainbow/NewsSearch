@@ -123,6 +123,7 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
     }
+    
 
     public void openBrowser(int position){
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
