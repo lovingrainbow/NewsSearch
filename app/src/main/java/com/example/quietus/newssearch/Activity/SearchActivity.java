@@ -1,6 +1,9 @@
 package com.example.quietus.newssearch.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.view.MenuItemCompat;
@@ -24,12 +27,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -69,10 +74,15 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                articles.clear();
-                sQuery = query;
-                onArticleSearch(0);
-                searchView.clearFocus();
+                if (!isNetworkAvailable() || !isOnline()){
+                    Toast.makeText(getApplicationContext(), "Network is not available, please check the wifi.", Toast.LENGTH_LONG).show();
+                    searchView.clearFocus();
+                }else {
+                    articles.clear();
+                    sQuery = query;
+                    onArticleSearch(0);
+                    searchView.clearFocus();
+                }
                 return true;
             }
 
@@ -143,6 +153,24 @@ public class SearchActivity extends AppCompatActivity {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
     }
 
     public void onArticleSearch(int page){
